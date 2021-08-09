@@ -30,29 +30,35 @@ local itemSlotTable = {
     ["INVTYPE_QUIVER"] =         { 20, 21, 22, 23 }
 };
 
-local function usableSlotID ( itemEquipLoc )
+local function usableSlotID(itemEquipLoc)
     return itemSlotTable[itemEquipLoc] or nil
 end
 
 local f = CreateFrame("FRAME", "Listener");
 f:RegisterEvent("ITEM_LOCKED");
 local function eventHandler(self, event, bagOrSlotIndex, slotIndex)
-    if bagOrSlotIndex > 4 then return end
+    if event == "ITEM_LOCKED" then
+        if bagOrSlotIndex > 4 then return end
 
-    local slotNum = GetContainerNumSlots(bagOrSlotIndex)
+        local slotNum = GetContainerNumSlots(bagOrSlotIndex)
 
-    if _G["ContainerFrame"..(bagOrSlotIndex+1).."Item"..(slotNum - slotIndex + 1)..".UpgradeFrame"] ~= nil then
-        _G["ContainerFrame"..(bagOrSlotIndex+1).."Item"..(slotNum - slotIndex + 1)..".UpgradeFrame"]:Hide()
+        if _G["ContainerFrame" .. (bagOrSlotIndex + 1) .. "Item" .. (slotNum - slotIndex + 1) .. ".UpgradeFrame"] ~= nil then
+            _G["ContainerFrame" .. (bagOrSlotIndex + 1) .. "Item" .. (slotNum - slotIndex + 1) .. ".UpgradeFrame"]:Hide()
+        end
     end
 end
 f:SetScript("OnEvent", eventHandler)
 
-hooksecurefunc("SetItemButtonTextureVertexColor", function (button, _)
+hooksecurefunc("SetItemButtonTextureVertexColor", function(button, _)
+    if string.find(button:GetName(), "ContainerFrame(%d+)Item(%d+)") == nil then return end
+
     local _, _, _, _, _, _, itemLink = GetContainerItemInfo(button:GetParent():GetID(), button:GetID())
     if itemLink == nil then return end
     local _, _, _, itemLevel, itemMinLevel, itemType, _, itemStackCount, itemEquipLoc = GetItemInfo(itemLink)
-    if itemMinLevel  > UnitLevel("player") then
-        _G[button:GetName().."IconTexture"]:SetVertexColor(1, 0, 0)
+    if itemMinLevel == nil then return end
+
+    if itemMinLevel > UnitLevel("player") then
+        _G[button:GetName() .. "IconTexture"]:SetVertexColor(1, 0, 0)
         return
     end
 
@@ -66,7 +72,7 @@ hooksecurefunc("SetItemButtonTextureVertexColor", function (button, _)
         end
         if equippedItemLink == nil or equippedItemLevel < itemLevel then
             if button.UpgradeFrame == nil then
-                button.UpgradeFrame = CreateFrame("BUTTON", button:GetName()..".UpgradeFrame", button, nil)
+                button.UpgradeFrame = CreateFrame("BUTTON", button:GetName() .. ".UpgradeFrame", button, nil)
                 button.UpgradeFrame:SetPoint("BOTTOMRIGHT", 4, 0)
                 button.UpgradeFrame:SetSize(20, 20)
                 button.UpgradeFrame:EnableMouse(true)
