@@ -1,0 +1,9 @@
+## Interface: 30300
+## Title: PrestigeEquipment
+## Notes: Shows item tooltip as red when level requirement isnt fulfilled
+## Author: robinsch
+## Version: 0.0.001b
+## Dependencies:
+## OptionalDeps:
+
+PrestigeEquipment.lua
