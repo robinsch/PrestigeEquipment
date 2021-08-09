@@ -60,8 +60,11 @@ hooksecurefunc("SetItemButtonTextureVertexColor", function (button, _)
 
     for _, slotId in ipairs(usableSlotID(itemEquipLoc)) do
         local equippedItemLink = GetInventoryItemLink("player", slotId)
-        local _, _, _, equippedItemLevel = GetItemInfo(equippedItemLink)
-        if equippedItemLevel == nil or equippedItemLevel < itemLevel then
+        local equippedItemLevel = 0
+        if equippedItemLink ~= nil then
+            _, _, _, equippedItemLevel = GetItemInfo(equippedItemLink)
+        end
+        if equippedItemLink == nil or equippedItemLevel < itemLevel then
             if button.UpgradeFrame == nil then
                 button.UpgradeFrame = CreateFrame("BUTTON", button:GetName()..".UpgradeFrame", button, nil)
                 button.UpgradeFrame:SetPoint("BOTTOMRIGHT", 4, 0)
